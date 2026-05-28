@@ -1,0 +1,23 @@
+name: Latency Collector
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # runs every 15 minutes
+  workflow_dispatch:           # lets you trigger manually too
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - run: pip install -r requirements.txt
+
+      - name: Run collector (one round)
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: python collector.py --limit 8 --interval 0
